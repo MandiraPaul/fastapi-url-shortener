@@ -230,9 +230,9 @@ def redirect_to_original_url(
         print(f"DUPLICATE CLICK IGNORED: {short_code}")
 
         # Step 5: Redirect user
-        return RedirectResponse(
-            url=original_url,
-            status_code=302
+    return RedirectResponse(
+        url=original_url,
+        status_code=302
     )
 
 @app.get("/analytics/{short_code}")
