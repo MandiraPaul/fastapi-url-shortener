@@ -17,12 +17,15 @@ from sqlalchemy import text
 
 from database import engine
 
+from redis_client import redis_client, REDIS_HOST, REDIS_PORT
+
 
 app = FastAPI()
 limiter = Limiter(
     key_func=get_remote_address,
-    storage_uri="redis://127.0.0.1:6379/1"
+    storage_uri=f"redis://{REDIS_HOST}:{REDIS_PORT}/1"
 )
+
 
 app.state.limiter = limiter
 
@@ -212,7 +215,7 @@ def redirect_to_original_url(
         should_save_click = bool(is_new_click)
 
     except RedisError:
-        # Redis বন্ধ থাকলে analytics পুরো বন্ধ করব না
+        
         should_save_click = True
 
 

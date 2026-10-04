@@ -1,19 +1,18 @@
-
+import os
 import redis
+from dotenv import load_dotenv
+
+load_dotenv()
+
+REDIS_HOST = os.getenv("REDIS_HOST", "127.0.0.1")
+REDIS_PORT = int(os.getenv("REDIS_PORT", "6379"))
 
 redis_client = redis.Redis(
-    host="127.0.0.1",
-    port=6379,
+    host=REDIS_HOST,
+    port=REDIS_PORT,
     decode_responses=True
 )
 
-
 if __name__ == "__main__":
-
     response = redis_client.ping()
-
     print("Redis connection successful:", response)
-
-    saved_url = redis_client.get("test:abc123")
-
-    print("Saved URL:", saved_url)
