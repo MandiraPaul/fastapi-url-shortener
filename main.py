@@ -18,12 +18,14 @@ from sqlalchemy import text
 from database import engine
 
 from redis_client import redis_client, REDIS_HOST, REDIS_PORT
-
+from redis_client import redis_client, REDIS_HOST, REDIS_PORT, REDIS_URL
 
 app = FastAPI()
+redis_storage_uri = REDIS_URL or f"redis://{REDIS_HOST}:{REDIS_PORT}/1"
+
 limiter = Limiter(
     key_func=get_remote_address,
-    storage_uri=f"redis://{REDIS_HOST}:{REDIS_PORT}/1"
+    storage_uri=redis_storage_uri
 )
 
 
