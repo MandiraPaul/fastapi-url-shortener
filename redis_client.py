@@ -10,7 +10,9 @@ REDIS_PORT = int(os.getenv("REDIS_PORT", "6379"))
 redis_client = redis.Redis(
     host=REDIS_HOST,
     port=REDIS_PORT,
-    decode_responses=True
+    decode_responses=True,
+    socket_connect_timeout=1,
+    socket_timeout=1
 )
 
 if __name__ == "__main__":
