@@ -25,7 +25,7 @@ BASE_URL = os.getenv("BASE_URL", "http://127.0.0.1:8000").rstrip("/")
 redis_storage_uri = REDIS_URL or f"redis://{REDIS_HOST}:{REDIS_PORT}/1"
 
 limiter = Limiter(
-    key_func=get_remote_address,
+    key_func=get_real_ip,
     storage_uri=redis_storage_uri
 )
 
@@ -201,7 +201,7 @@ def redirect_to_original_url(
     referrer = request.headers.get("referer")
 
     # Step 4: Schedule analytics in the background
-    client_ip = request.client.host if request.client else "unknown"
+    client_ip = get_real_ip(request) if request.client else "unknown"
 
     dedupe_key = f"click:{short_code}:{client_ip}:{user_agent}"
 
@@ -297,3 +297,13 @@ def get_analytics(short_code: str):
             dict(click) for click in recent_clicks
         ]
     }
+def get_real_ip(request: Request):
+    forwarded_for = request.headers.get("x-forwarded-for")
+
+    if forwarded_for:
+        return forwarded_for.split(",")[0].strip()
+
+    if request.client:
+        return request.client.host
+
+    return "unknown"
