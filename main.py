@@ -22,6 +22,16 @@ from redis_client import redis_client, REDIS_HOST, REDIS_PORT, REDIS_URL
 
 app = FastAPI()
 BASE_URL = os.getenv("BASE_URL", "http://127.0.0.1:8000").rstrip("/")
+def get_real_ip(request: Request):
+    forwarded_for = request.headers.get("x-forwarded-for")
+
+    if forwarded_for:
+        return forwarded_for.split(",")[0].strip()
+
+    if request.client:
+        return request.client.host
+
+    return "unknown"
 redis_storage_uri = REDIS_URL or f"redis://{REDIS_HOST}:{REDIS_PORT}/1"
 
 limiter = Limiter(
@@ -297,13 +307,3 @@ def get_analytics(short_code: str):
             dict(click) for click in recent_clicks
         ]
     }
-def get_real_ip(request: Request):
-    forwarded_for = request.headers.get("x-forwarded-for")
-
-    if forwarded_for:
-        return forwarded_for.split(",")[0].strip()
-
-    if request.client:
-        return request.client.host
-
-    return "unknown"
