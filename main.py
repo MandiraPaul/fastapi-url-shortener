@@ -1,3 +1,4 @@
+import os
 import json
 from fastapi import BackgroundTasks
 from analytics import save_click
@@ -17,10 +18,10 @@ from sqlalchemy import text
 
 from database import engine
 
-from redis_client import redis_client, REDIS_HOST, REDIS_PORT
 from redis_client import redis_client, REDIS_HOST, REDIS_PORT, REDIS_URL
 
 app = FastAPI()
+BASE_URL = os.getenv("BASE_URL", "http://127.0.0.1:8000").rstrip("/")
 redis_storage_uri = REDIS_URL or f"redis://{REDIS_HOST}:{REDIS_PORT}/1"
 
 limiter = Limiter(
@@ -106,7 +107,7 @@ def shorten_url(request: Request, data: URLRequest):
             }
         )
 
-    short_url = f"http://127.0.0.1:8000/{short_code}"
+    short_url = f"{BASE_URL}/{short_code}"
 
     return {
         "id": url_id,
